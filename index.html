@@ -1,7 +1,150 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>emptyenemy — визитка</title>
+<style>
+  :root {
+    --bg: #0e0f13;
+    --bg-soft: #16181f;
+    --card: #1b1e27;
+    --text: #eceef3;
+    --muted: #9aa1b2;
+    --accent: #7c5cff;
+    --accent-2: #22d3ee;
+    --border: #262a36;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f5f6fa;
+      --bg-soft: #ffffff;
+      --card: #ffffff;
+      --text: #14151a;
+      --muted: #5b6272;
+      --accent: #6244ff;
+      --accent-2: #0891b2;
+      --border: #e4e7ee;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: radial-gradient(1200px 800px at 20% -10%, rgba(124,92,255,0.18), transparent 60%),
+                radial-gradient(1000px 700px at 100% 10%, rgba(34,211,238,0.12), transparent 55%),
+                var(--bg);
+    color: var(--text);
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    line-height: 1.6;
+  }
+  .card {
+    width: 100%;
+    max-width: 520px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 40px 32px;
+    box-shadow: 0 30px 80px -30px rgba(0,0,0,0.5);
+    text-align: center;
+  }
+  .avatar {
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    box-shadow: 0 12px 30px -10px var(--accent);
+  }
+  h1 {
+    font-size: 28px;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+  .tagline {
+    color: var(--accent-2);
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 18px;
+  }
+  .bio {
+    color: var(--muted);
+    font-size: 15px;
+    margin-bottom: 28px;
+  }
+  .links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--bg-soft);
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  }
+  .link:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    background: var(--card);
+  }
+  .link .ico { font-size: 18px; }
+  .footer {
+    margin-top: 28px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
 <body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
+  <main class="card">
+    <div class="avatar">E</div>
+    <h1>emptyenemy</h1>
+    <p class="tagline">Создатель модов &amp; контента</p>
+    <p class="bio">
+      Привет! Делаю моды, экспериментирую с играми и веб-проектами.
+      Здесь — мои ссылки и контакты. Пиши, если интересно сотрудничество.
+    </p>
+
+    <nav class="links">
+      <a class="link" href="https://github.com/emptyenemy" target="_blank" rel="noopener">
+        <span class="ico">🐙</span> GitHub
+      </a>
+      <a class="link" href="mailto:renzade1337@gmail.com">
+        <span class="ico">✉️</span> Написать на почту
+      </a>
+      <a class="link" href="#" target="_blank" rel="noopener">
+        <span class="ico">💬</span> Telegram
+      </a>
+    </nav>
+
+    <p class="footer">
+      © <span id="year"></span> emptyenemy · сделано на
+      <a href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a>
+    </p>
+  </main>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
