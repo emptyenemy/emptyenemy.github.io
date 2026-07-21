@@ -4,145 +4,240 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>emptyenemy — визитка</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+  /* shadcn/ui — dark theme, violet accent */
   :root {
-    --bg: #0e0f13;
-    --bg-soft: #16181f;
-    --card: #1b1e27;
-    --text: #eceef3;
-    --muted: #9aa1b2;
-    --accent: #7c5cff;
-    --accent-2: #22d3ee;
-    --border: #262a36;
-  }
-  @media (prefers-color-scheme: light) {
-    :root {
-      --bg: #f5f6fa;
-      --bg-soft: #ffffff;
-      --card: #ffffff;
-      --text: #14151a;
-      --muted: #5b6272;
-      --accent: #6244ff;
-      --accent-2: #0891b2;
-      --border: #e4e7ee;
-    }
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 8% 6%;
+    --card-foreground: 0 0% 98%;
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 65%;
+    --primary: 263 80% 62%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 4% 12%;
+    --secondary-foreground: 0 0% 98%;
+    --border: 240 4% 16%;
+    --ring: 263 80% 62%;
+    --radius: 0.75rem;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: radial-gradient(1200px 800px at 20% -10%, rgba(124,92,255,0.18), transparent 60%),
-                radial-gradient(1000px 700px at 100% 10%, rgba(34,211,238,0.12), transparent 55%),
-                var(--bg);
-    color: var(--text);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background:
+      radial-gradient(900px 600px at 15% -10%, hsl(263 80% 62% / 0.20), transparent 55%),
+      radial-gradient(700px 500px at 100% 0%, hsl(280 80% 60% / 0.12), transparent 50%),
+      hsl(var(--background));
+    color: hsl(var(--foreground));
     min-height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 24px;
-    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.011em;
   }
+
+  /* Card */
   .card {
     width: 100%;
-    max-width: 520px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 40px 32px;
-    box-shadow: 0 30px 80px -30px rgba(0,0,0,0.5);
+    max-width: 440px;
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) + 4px);
+    box-shadow: 0 24px 60px -24px rgba(0,0,0,0.7), 0 0 0 1px hsl(263 80% 62% / 0.06);
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 32px 28px 20px;
     text-align: center;
   }
+  .card-content { padding: 0 28px 28px; }
+
+  /* Avatar */
   .avatar {
-    width: 96px;
-    height: 96px;
-    margin: 0 auto 20px;
+    width: 88px;
+    height: 88px;
+    margin: 0 auto 18px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 40px;
-    font-weight: 700;
+    font-size: 34px;
+    font-weight: 800;
     color: #fff;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    box-shadow: 0 12px 30px -10px var(--accent);
+    background: linear-gradient(135deg, hsl(263 80% 62%), hsl(290 75% 58%));
+    box-shadow: 0 10px 30px -8px hsl(263 80% 62% / 0.7);
+    outline: 4px solid hsl(263 80% 62% / 0.18);
   }
+
   h1 {
-    font-size: 28px;
-    letter-spacing: -0.5px;
-    margin-bottom: 6px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
   }
-  .tagline {
-    color: var(--accent-2);
+  .handle {
+    color: hsl(var(--muted-foreground));
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 2px;
+  }
+
+  /* Badges */
+  .badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 16px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    font-size: 12px;
     font-weight: 600;
-    font-size: 15px;
-    margin-bottom: 18px;
+    border-radius: 9999px;
+    background: hsl(var(--secondary));
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--secondary-foreground));
   }
+  .badge svg { width: 13px; height: 13px; }
+  .badge.badge-primary {
+    background: hsl(263 80% 62% / 0.15);
+    border-color: hsl(263 80% 62% / 0.35);
+    color: hsl(263 90% 80%);
+  }
+
   .bio {
-    color: var(--muted);
-    font-size: 15px;
-    margin-bottom: 28px;
+    color: hsl(var(--muted-foreground));
+    font-size: 14.5px;
+    line-height: 1.65;
+    text-align: center;
+    margin-top: 18px;
   }
-  .links {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+
+  /* Separator */
+  .separator {
+    height: 1px;
+    background: hsl(var(--border));
+    margin: 24px 0;
   }
-  .link {
-    display: flex;
+
+  /* Buttons */
+  .links { display: flex; flex-direction: column; gap: 10px; }
+  .btn {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    padding: 14px 18px;
-    border-radius: 14px;
-    border: 1px solid var(--border);
-    background: var(--bg-soft);
-    color: var(--text);
-    text-decoration: none;
+    gap: 9px;
+    height: 44px;
+    padding: 0 16px;
+    font-family: inherit;
+    font-size: 14px;
     font-weight: 600;
-    font-size: 15px;
-    transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    border-radius: var(--radius);
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    outline: none;
   }
-  .link:hover {
-    transform: translateY(-2px);
-    border-color: var(--accent);
-    background: var(--card);
+  .btn svg { width: 18px; height: 18px; }
+  .btn:focus-visible { box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring)); }
+  .btn:active { transform: translateY(1px); }
+
+  .btn-primary {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border: 1px solid transparent;
+    box-shadow: 0 8px 20px -8px hsl(263 80% 62% / 0.8);
   }
-  .link .ico { font-size: 18px; }
+  .btn-primary:hover { background: hsl(263 80% 67%); }
+
+  .btn-outline {
+    background: transparent;
+    color: hsl(var(--foreground));
+    border: 1px solid hsl(var(--border));
+  }
+  .btn-outline:hover {
+    background: hsl(var(--secondary));
+    border-color: hsl(263 80% 62% / 0.5);
+  }
+
   .footer {
-    margin-top: 28px;
-    font-size: 13px;
-    color: var(--muted);
+    margin-top: 22px;
+    text-align: center;
+    font-size: 12.5px;
+    color: hsl(var(--muted-foreground));
   }
-  .footer a { color: var(--accent); text-decoration: none; }
+  .footer a { color: hsl(263 90% 78%); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
   <main class="card">
-    <div class="avatar">E</div>
-    <h1>emptyenemy</h1>
-    <p class="tagline">Создатель модов &amp; контента</p>
-    <p class="bio">
-      Привет! Делаю моды, экспериментирую с играми и веб-проектами.
-      Здесь — мои ссылки и контакты. Пиши, если интересно сотрудничество.
-    </p>
+    <div class="card-header">
+      <div class="avatar">E</div>
+      <h1>emptyenemy</h1>
+      <div class="handle">@emptyenemy</div>
 
-    <nav class="links">
-      <a class="link" href="https://github.com/emptyenemy" target="_blank" rel="noopener">
-        <span class="ico">🐙</span> GitHub
-      </a>
-      <a class="link" href="mailto:renzade1337@gmail.com">
-        <span class="ico">✉️</span> Написать на почту
-      </a>
-      <a class="link" href="#" target="_blank" rel="noopener">
-        <span class="ico">💬</span> Telegram
-      </a>
-    </nav>
+      <div class="badges">
+        <span class="badge badge-primary">
+          <!-- lucide: gamepad-2 -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" x2="10" y1="11" y2="11"/><line x1="8" x2="8" y1="9" y2="13"/><line x1="15" x2="15.01" y1="12" y2="12"/><line x1="18" x2="18.01" y1="10" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.544-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"/></svg>
+          Моддинг
+        </span>
+        <span class="badge">
+          <!-- lucide: code-xml -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+          Разработка
+        </span>
+        <span class="badge">
+          <!-- lucide: map-pin -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+          Online
+        </span>
+      </div>
+    </div>
 
-    <p class="footer">
-      © <span id="year"></span> emptyenemy · сделано на
-      <a href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a>
-    </p>
+    <div class="card-content">
+      <p class="bio">
+        Привет! Делаю моды, эксперименты с играми и веб-проекты.
+        Здесь — мои ссылки и контакты. Пиши, если интересно сотрудничество.
+      </p>
+
+      <div class="separator"></div>
+
+      <nav class="links">
+        <a class="btn btn-primary" href="https://github.com/emptyenemy" target="_blank" rel="noopener">
+          <!-- lucide: github -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+          GitHub
+        </a>
+        <a class="btn btn-outline" href="mailto:renzade1337@gmail.com">
+          <!-- lucide: mail -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          Написать на почту
+        </a>
+        <a class="btn btn-outline" href="#" target="_blank" rel="noopener">
+          <!-- lucide: send -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>
+          Telegram
+        </a>
+      </nav>
+
+      <p class="footer">
+        © <span id="year"></span> emptyenemy · сделано на
+        <a href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a>
+      </p>
+    </div>
   </main>
+
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
