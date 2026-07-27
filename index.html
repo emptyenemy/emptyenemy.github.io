@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#09090b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="icon" href="https://avatars.githubusercontent.com/u/24479576?v=4&s=64" type="image/png">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>emptyenemy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://avatars.githubusercontent.com">
+<!-- ставится до отрисовки: без JS карточка видна сразу, с JS — проявляется после загрузки шрифтов -->
+<script>document.documentElement.classList.add('js');</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* shadcn/ui — dark theme, violet accent */
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 8% 6%;
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 65%;
+    --primary: 263 80% 62%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 4% 12%;
+    --secondary-foreground: 0 0% 98%;
+    --border: 240 4% 16%;
+    --ring: 263 80% 62%;
+    --radius: 0.75rem;
+    /* горизонтальные отступы тянутся за шириной, вертикальные — за высотой окна */
+    --pad: clamp(16px, 2.4vw, 32px);
+    --gap-y: clamp(6px, 1vh, 12px);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overflow-x: hidden; }
+  body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background:
+      radial-gradient(900px 600px at 15% -10%, hsl(263 80% 62% / 0.20), transparent 55%),
+      radial-gradient(700px 500px at 100% 0%, hsl(280 80% 60% / 0.12), transparent 50%),
+      hsl(var(--background));
+    background-attachment: fixed;
+    color: hsl(var(--foreground));
+    overflow-x: hidden;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    padding:
+      max(clamp(10px, 2vh, 24px), env(safe-area-inset-top))
+      max(clamp(12px, 2vw, 24px), env(safe-area-inset-right))
+      max(clamp(10px, 2vh, 24px), env(safe-area-inset-bottom))
+      max(clamp(12px, 2vw, 24px), env(safe-area-inset-left));
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.011em;
+  }
+
+  /* Card */
+  .card {
+    width: 100%;
+    max-width: 460px;
+    /* auto-margins центрируют карточку, но не обрезают её при переполнении */
+    margin: auto;
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) + 4px);
+    box-shadow: 0 24px 60px -24px rgba(0,0,0,0.7), 0 0 0 1px hsl(263 80% 62% / 0.06);
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pane { min-width: 0; }
+  .profile {
+    padding: clamp(18px, 3.4vh, 40px) var(--pad) clamp(14px, 2.4vh, 32px);
+    text-align: center;
+  }
+  .projects-pane {
+    padding: clamp(16px, 2.6vh, 24px) var(--pad);
+    border-top: 1px solid hsl(var(--border));
+  }
+  .contacts-pane {
+    padding: clamp(16px, 2.4vh, 24px) var(--pad) clamp(16px, 2.6vh, 28px);
+    border-top: 1px solid hsl(var(--border));
+    display: flex; flex-direction: column;
+  }
+
+  /* Avatar */
+  .avatar {
+    width: clamp(56px, 10.5vh, 88px);
+    height: clamp(56px, 10.5vh, 88px);
+    margin: 0 auto clamp(10px, 1.8vh, 18px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(26px, 4.8vh, 40px);
+    background: linear-gradient(135deg, hsl(263 80% 62%), hsl(290 75% 58%));
+    box-shadow: 0 10px 30px -8px hsl(263 80% 62% / 0.7);
+    outline: 4px solid hsl(263 80% 62% / 0.18);
+    overflow: hidden;
+  }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
+
+  h1 { font-size: clamp(20px, 2.9vh, 24px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; }
+  .handle { color: hsl(var(--muted-foreground)); font-size: 14px; font-weight: 500; line-height: 1.4; margin-top: 4px; }
+
+  /* Badges */
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: clamp(10px, 1.8vh, 16px); }
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 10px; font-size: 12px; font-weight: 600; line-height: 1.25; border-radius: 9999px;
+    background: hsl(var(--secondary)); border: 1px solid hsl(var(--border));
+    color: hsl(var(--secondary-foreground));
+  }
+  .badge svg { width: 13px; height: 13px; flex: 0 0 auto; }
+  .badge.badge-primary {
+    background: hsl(263 80% 62% / 0.15);
+    border-color: hsl(263 80% 62% / 0.35);
+    color: hsl(263 90% 80%);
+  }
+
+  .bio {
+    color: hsl(var(--muted-foreground));
+    font-size: clamp(13.5px, 1.8vh, 14.5px); line-height: 1.6; text-align: center;
+    margin-top: clamp(10px, 2vh, 18px);
+  }
+
+  /* Project list (shadcn list item) */
+  .projects { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap-y); align-content: start; }
+  .project {
+    display: flex; align-items: center; gap: 12px;
+    padding: clamp(9px, 1.4vh, 12px) 14px; border-radius: var(--radius);
+    border: 1px solid hsl(var(--border)); background: hsl(var(--secondary) / 0.5);
+    text-decoration: none; color: hsl(var(--foreground));
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  @media (hover: hover) {
+    .project:hover { border-color: hsl(263 80% 62% / 0.5); background: hsl(var(--secondary)); }
+  }
+  .project:active { background: hsl(var(--secondary)); border-color: hsl(263 80% 62% / 0.5); }
+  .project-icon {
+    flex: 0 0 auto;
+    width: clamp(32px, 4.6vh, 38px); height: clamp(32px, 4.6vh, 38px);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    background: hsl(263 80% 62% / 0.14); color: hsl(263 90% 80%);
+  }
+  .project-icon svg { width: 19px; height: 19px; flex: 0 0 auto; }
+  .project-body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .project-title { font-size: 14px; font-weight: 600; line-height: 1.3; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+  .project-desc { font-size: 12.5px; line-height: 1.4; color: hsl(var(--muted-foreground)); }
+  .project-lang {
+    flex: 0 0 auto;
+    font-size: 10.5px; font-weight: 600; line-height: 1.5; padding: 1px 7px; border-radius: 9999px;
+    background: hsl(var(--muted)); color: hsl(var(--muted-foreground));
+  }
+  .project .chev { color: hsl(var(--muted-foreground)); flex: 0 0 auto; display: flex; align-items: center; }
+  .project .chev svg { width: 16px; height: 16px; display: block; }
+
+  /* Buttons */
+  .links { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(8px, 1.2vh, 10px); }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+    height: clamp(40px, 5.4vh, 44px); padding: 0 16px;
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    border-radius: var(--radius); text-decoration: none; cursor: pointer; outline: none;
+    transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn svg { width: 18px; height: 18px; flex: 0 0 auto; }
+  .btn:focus-visible { box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring)); }
+  .btn:active { transform: translateY(1px); }
+  .btn-outline { background: transparent; color: hsl(var(--foreground)); border: 1px solid hsl(var(--border)); }
+  @media (hover: hover) {
+    .btn-outline:hover { background: hsl(var(--secondary)); border-color: hsl(263 80% 62% / 0.5); }
+    .footer a:hover { text-decoration: underline; }
+  }
+
+  .footer {
+    margin-top: clamp(12px, 2vh, 20px);
+    text-align: center; font-size: 12.5px; line-height: 1.5; color: hsl(var(--muted-foreground));
+  }
+  .footer a { color: hsl(263 90% 78%); text-decoration: none; }
+
+  /* ---- Скелетон: до загрузки шрифтов и аватара текст подменяется плашками ---- */
+  @keyframes sk-shimmer { to { background-position: -150% 0; } }
+  @keyframes sk-appear { from { opacity: 0; } to { opacity: 1; } }
+
+  .js:not(.ready) h1,
+  .js:not(.ready) .handle,
+  .js:not(.ready) .bio,
+  .js:not(.ready) .badge,
+  .js:not(.ready) .project-title,
+  .js:not(.ready) .project-desc,
+  .js:not(.ready) .btn,
+  .js:not(.ready) .footer,
+  .js:not(.ready) .avatar {
+    color: transparent;
+    background-image: linear-gradient(90deg,
+      hsl(240 4% 13%) 20%, hsl(240 5% 20%) 45%, hsl(240 4% 13%) 70%);
+    background-size: 250% 100%;
+    background-color: transparent;
+    animation: sk-shimmer 1.4s linear infinite;
+    border-radius: 8px;
+    box-shadow: none;
+  }
+  .js:not(.ready) .badge,
+  .js:not(.ready) .btn { border-color: transparent; }
+  .js:not(.ready) .footer a { color: transparent; }
+  /* вложенные бейджи прячем целиком: иначе они рисуются плашкой поверх плашки заголовка */
+  .js:not(.ready) .project-lang { visibility: hidden; }
+  .js:not(.ready) .avatar { border-radius: 50%; outline-color: hsl(240 4% 13%); }
+  .js:not(.ready) .avatar img { opacity: 0; }
+  .js:not(.ready) .project-icon { background: hsl(240 4% 13%); }
+  .js:not(.ready) svg { visibility: hidden; }
+
+  /* контент проявляется, когда всё готово */
+  .js.ready .pane { animation: sk-appear 0.4s ease both; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .js:not(.ready) h1, .js:not(.ready) .handle, .js:not(.ready) .bio,
+    .js:not(.ready) .badge, .js:not(.ready) .project-title, .js:not(.ready) .project-desc,
+    .js:not(.ready) .btn, .js:not(.ready) .footer,
+    .js:not(.ready) .avatar { animation: none; background-position: 50% 0; }
+    .js.ready .pane { animation: none; }
+  }
+
+  /* ---- Уплотнение: включается скриптом, только если контент не влез в экран ---- */
+  .compact-1 .badge { padding: 4px 9px; font-size: 11.5px; }
+  .compact-1 .badges { gap: 6px; }
+  .compact-1 .bio { -webkit-line-clamp: 2; }
+  .compact-1 .bio,
+  .compact-1 .project-desc { display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+  .compact-1 .project-desc { -webkit-line-clamp: 1; }
+
+  .compact-2 .avatar { width: 60px; height: 60px; font-size: 28px; margin-bottom: 10px; }
+  .compact-2 .project { padding: 8px 12px; }
+  .compact-2 .btn { height: 40px; }
+  .compact-2 .footer { margin-top: 12px; }
+
+  .compact-3 .bio { display: none; }
+
+  .compact-4 .badges { display: none; }
+  .compact-4 .links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .compact-4 .footer { font-size: 12px; margin-top: 10px; }
+  @media (max-width: 759px) {
+    .compact-4 .projects { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .compact-4 .project-icon,
+    .compact-4 .project .chev,
+    .compact-4 .project-lang { display: none; }
+  }
+
+  /* последний уровень — сжимаем сами отступы (актуально для альбомных телефонов) */
+  .compact-5 body {
+    padding-top: max(8px, env(safe-area-inset-top));
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+  .compact-5 .profile { padding: 14px var(--pad) 12px; }
+  .compact-5 .projects-pane { padding: 14px var(--pad); }
+  .compact-5 .contacts-pane { padding: 10px var(--pad) 12px; }
+  .compact-5 .avatar { width: 48px; height: 48px; font-size: 22px; margin-bottom: 8px; }
+  .compact-5 h1 { font-size: 19px; }
+  .compact-5 .handle { font-size: 13px; }
+  .compact-5 .projects { gap: 6px; }
+  .compact-5 .project { padding: 6px 11px; }
+  .compact-5 .btn { height: 36px; font-size: 13px; }
+  .compact-5 .footer { margin-top: 6px; font-size: 11.5px; }
+
+  /* ---- Планшет и десктоп: две колонки, контакты снизу ---- */
+  @media (min-width: 760px), (min-width: 620px) and (orientation: landscape) {
+    .card {
+      max-width: 900px;
+      grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+      grid-template-areas:
+        "profile  projects"
+        "contacts contacts";
+    }
+    .profile { grid-area: profile; padding: clamp(20px, 4vh, 40px) var(--pad) clamp(16px, 3vh, 32px); }
+    .projects-pane {
+      grid-area: projects;
+      padding: clamp(20px, 4vh, 40px) var(--pad);
+      border-top: none;
+      border-left: 1px solid hsl(var(--border));
+      display: flex; flex-direction: column;
+    }
+    /* список растягивается на высоту левой колонки — колонки одинаковой длины */
+    .projects { flex: 1 1 auto; grid-auto-rows: 1fr; }
+    .contacts-pane {
+      grid-area: contacts;
+      padding: clamp(18px, 3vh, 26px) var(--pad) clamp(20px, 3.2vh, 30px);
+      align-items: center;
+    }
+    /* контакты — центрированная колонка ограниченной ширины */
+    .contacts-pane > * { width: 100%; max-width: 620px; }
+    .links { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .avatar { width: clamp(64px, 12vh, 96px); height: clamp(64px, 12vh, 96px); font-size: clamp(30px, 5.5vh, 44px); }
+  }
+
+  /* ---- Широкие экраны: проекты плитками 2×2 ---- */
+  @media (min-width: 1180px) and (min-height: 620px) {
+    .card { max-width: 1080px; grid-template-columns: 360px minmax(0, 1fr); }
+    .projects { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .project {
+      position: relative;
+      flex-direction: column; align-items: stretch; gap: 14px;
+      padding: 18px;
+    }
+    .project-icon { width: 44px; height: 44px; border-radius: 12px; }
+    .project-icon svg { width: 22px; height: 22px; }
+    .project-body { flex: 0 0 auto; margin-top: auto; gap: 4px; }
+    .project-title { font-size: 15px; }
+    .project-desc { font-size: 13px; line-height: 1.45; }
+    .project .chev { position: absolute; top: 18px; right: 18px; }
+    .bio { font-size: 15px; }
+  }
+
+  /* Широкий, но низкий экран — плитки не нужны, но сетка 2×2 остаётся */
+  @media (min-width: 1180px) and (max-height: 619px) {
+    .card { max-width: 1080px; grid-template-columns: 320px minmax(0, 1fr); }
+    .projects { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (min-width: 1500px) and (min-height: 700px) {
+    .card { max-width: 1180px; grid-template-columns: 380px minmax(0, 1fr); }
+  }
+
+  /* Совсем узкие телефоны */
+  @media (max-width: 400px) {
+    h1 { font-size: clamp(19px, 2.7vh, 21px); }
+    .project { gap: 10px; }
+    .project-desc { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+  <main class="card">
+    <section class="pane profile">
+      <div class="avatar">
+        <img src="https://avatars.githubusercontent.com/u/24479576?v=4&s=256"
+             alt="emptyenemy" width="256" height="256" fetchpriority="high" decoding="async">
+      </div>
+      <h1>emptyenemy</h1>
+      <div class="handle">@emptyenemy</div>
+
+      <div class="badges">
+        <span class="badge badge-primary">
+          <!-- lucide: webhook -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 16.98h-5.99c-1.1 0-1.95.94-2.48 1.9A4 4 0 0 1 2 17c.01-.7.2-1.4.57-2"/><path d="m6 17 3.13-5.78c.53-.97.1-2.18-.5-3.1a4 4 0 1 1 6.89-4.06"/><path d="m12 6 3.13 5.73C15.66 12.7 16.9 13 18 13a4 4 0 0 1 0 8"/></svg>
+          REST API
+        </span>
+        <span class="badge">
+          <!-- lucide: terminal -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 17 6-6-6-6"/><path d="M12 19h8"/></svg>
+          Python
+        </span>
+        <span class="badge">
+          <!-- lucide: hexagon -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          Node.js
+        </span>
+        <span class="badge">
+          <!-- lucide: code-xml -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+          HTML / CSS / JS
+        </span>
+        <span class="badge">
+          <!-- lucide: send -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>
+          Telegram API
+        </span>
+        <span class="badge">
+          <!-- lucide: database -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
+          PostgreSQL / SQLite
+        </span>
+        <span class="badge">
+          <!-- lucide: crosshair -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg>
+          Source / Source 2
+        </span>
+      </div>
+
+      <p class="bio">
+        Живу в REST API: эндпоинты, JSON, реверс чужих интерфейсов.
+        Пишу веб-сервисы и ботов, плагины для Minecraft и Source
+        (CS:S, CS2), моддинг и утилиты на Python.
+        Часть проектов открыта на GitHub.
+      </p>
+    </section>
+
+    <section class="pane projects-pane">
+      <div class="projects">
+        <a class="project" href="https://muted.top" target="_blank" rel="noopener">
+          <span class="project-icon">
+            <!-- lucide: layers -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>
+          </span>
+          <span class="project-body">
+            <span class="project-title">muted.top <span class="project-lang">Платформа</span></span>
+            <span class="project-desc">TikTok-аккаунты, коды верификации и аналитика хештегов через единый API</span>
+          </span>
+          <span class="chev">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+          </span>
+        </a>
+
+        <a class="project" href="https://github.com/emptyenemy/ping_display" target="_blank" rel="noopener">
+          <span class="project-icon">
+            <!-- lucide: activity -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg>
+          </span>
+          <span class="project-body">
+            <span class="project-title">PingDisplay <span class="project-lang">Java</span></span>
+            <span class="project-desc">Плагин: пинг в таб-листе с цветовой индикацией</span>
+          </span>
+          <span class="chev">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+          </span>
+        </a>
+
+        <a class="project" href="https://github.com/emptyenemy/dbd_tools" target="_blank" rel="noopener">
+          <span class="project-icon">
+            <!-- lucide: terminal-square -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 11 2-2-2-2"/><path d="M11 13h4"/><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/></svg>
+          </span>
+          <span class="project-body">
+            <span class="project-title">dbd_tools <span class="project-lang">Python</span></span>
+            <span class="project-desc">TUI для управления регионами в Dead by Daylight (Windows)</span>
+          </span>
+          <span class="chev">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+          </span>
+        </a>
+
+        <a class="project" href="https://github.com/emptyenemy/optifine_manager" target="_blank" rel="noopener">
+          <span class="project-icon">
+            <!-- lucide: package -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+          </span>
+          <span class="project-body">
+            <span class="project-title">optifine_manager <span class="project-lang">Python</span></span>
+            <span class="project-desc">Менеджер для OptiFine</span>
+          </span>
+          <span class="chev">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+          </span>
+        </a>
+      </div>
+    </section>
+
+    <section class="pane contacts-pane">
+      <nav class="links">
+        <a class="btn btn-outline" href="https://t.me/emptyenemy" target="_blank" rel="noopener">
+          <!-- lucide: send -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>
+          Telegram
+        </a>
+        <a class="btn btn-outline" href="https://github.com/emptyenemy" target="_blank" rel="noopener">
+          <!-- lucide: github -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+          GitHub
+        </a>
+      </nav>
+
+      <p class="footer">
+        © <span id="year"></span> emptyenemy — сделано на
+        <a href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a>
+      </p>
+    </section>
+  </main>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Подгоняем содержимое под высоту экрана: уровни уплотнения включаются
+    // по очереди и только пока страница не помещается целиком.
+    (function () {
+      var root = document.documentElement;
+      var levels = ['compact-1', 'compact-2', 'compact-3', 'compact-4', 'compact-5'];
+
+      function overflows() {
+        return root.scrollHeight > window.innerHeight;
+      }
+
+      function fit() {
+        root.classList.remove.apply(root.classList, levels);
+        for (var i = 0; i < levels.length && overflows(); i++) {
+          root.classList.add(levels[i]);
+        }
+      }
+
+      var pending;
+      function schedule() {
+        cancelAnimationFrame(pending);
+        pending = requestAnimationFrame(fit);
+      }
+
+      fit();
+      addEventListener('resize', schedule);
+      addEventListener('orientationchange', schedule);
+
+      // Показываем карточку, когда подтянулись шрифты и аватар, но не дольше 1.8 с.
+      var shown = false;
+      function reveal() {
+        if (shown) return;
+        shown = true;
+        fit();
+        root.classList.add('ready');
+      }
+
+      // document.fonts.ready резолвится мгновенно, пока css со шрифтами ещё не приехал,
+      // поэтому сначала ждём сам стиль, затем явно запрашиваем нужные начертания Inter
+      function fontsReady() {
+        if (!document.fonts || !document.fonts.load) return Promise.resolve();
+        var link = document.querySelector('link[href*="fonts.googleapis.com/css"]');
+        var cssReady = (!link || link.sheet) ? Promise.resolve() : new Promise(function (resolve) {
+          link.addEventListener('load', resolve);
+          link.addEventListener('error', resolve);
+        });
+        return cssReady.then(function () {
+          return Promise.all(['400', '500', '600', '700'].map(function (weight) {
+            return document.fonts.load(weight + ' 1rem Inter');
+          }));
+        }).then(function () { return document.fonts.ready; });
+      }
+
+      var waits = [fontsReady()];
+      var avatar = document.querySelector('.avatar img');
+      if (avatar && !avatar.complete) {
+        waits.push(new Promise(function (resolve) {
+          avatar.addEventListener('load', resolve);
+          avatar.addEventListener('error', resolve);
+        }));
+      }
+
+      Promise.all(waits).then(reveal);
+      setTimeout(reveal, 1800);
+    })();
+  </script>
+</body>
+</html>
